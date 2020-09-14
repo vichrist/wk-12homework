@@ -1,0 +1,27 @@
+{
+  "name": "wk-12homework",
+  "version": "1.0.0",
+  "description": "The purpose of this application is to build a backend program where users can access data via Content Management Systems.",
+  "main": "index.js",
+  "dependencies": {
+    "console.table": "^0.10.0",
+    "express": "^4.17.1",
+    "inquirer": "^7.3.3",
+    "mysql": "^2.18.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/vichrist/wk-12homework.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/vichrist/wk-12homework/issues"
+  },
+  "homepage": "https://github.com/vichrist/wk-12homework#readme"
+}
