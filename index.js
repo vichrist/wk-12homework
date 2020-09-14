@@ -106,3 +106,53 @@ const viewDepartments = () => {
     });
 };
 
+const addRoles = () => {
+    let departments = [];
+    connection.query('SELECT * FROM department', (err, res) => {
+        if (err) throw err; 
+        for (let i = 0; i < res.length; i++) {
+            departments.push(res[i].name)
+        }
+        inquirer.prompt ([
+            {
+            name: 'title', 
+            type: 'input', 
+            message: 'Enter the role', 
+            },
+            {
+            name: 'salary', 
+            type: 'input', 
+            message: 'What will be starting salary for this role',
+            },
+            {
+            name: 'department_id ', 
+            type: 'list', 
+            message: 'Choose the applicable department for this role', 
+            choices: departments
+            }         
+        ])
+        .then(function ({title, salary, department_id}) {
+            
+            let index = departments.indexOf(department_id);
+            connection.query(`INSERT INTO role (title, salary, department_id) VALUES ('${title}', '${salary}', ${index})`, (err, res) => {
+                if (err) throw err; 
+                console.log('You have added a new role');
+                viewRoles(); 
+            });
+        }) 
+    })
+};
+
+
+const viewRoles = () => {
+    var query = "SELECT * FROM role"; 
+    connection.query(query, (err, res) => {
+        console.log(`ROLES`); 
+        res.forEach(role => {
+            console.log(`ID: ${role.id} | Salary: ${role.salary} | Title: ${role.title} | Department ID: ${role.department_id}`);
+        });
+        actionDatabase(); 
+    });
+};
+
+

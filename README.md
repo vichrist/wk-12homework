@@ -18,16 +18,14 @@
     
     ## Installation:
         
-        MySQL   
+        MySQL               | Open-source relational database management system 
         Node.js             | Cross-platform JavaScript runtime environment used for backend developing
         npm init -y         | Run this command in your integrated terminal to download Node dependcies 
         npm i               | Run this command in your integrated terminal do install the JSON package 
-        npm i inquirer      |
-        npm i console.table | 
    
     ## Usage:
         
-        This application will allow users to manage employee company data  
+        This application will allow users to manage all employee company data  
 
     ## License:
         ![MIT License] {https://img.shields.io/badge/license-MIT-blue.svg}
