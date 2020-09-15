@@ -156,3 +156,115 @@ const viewRoles = () => {
 };
 
 
+const addEmployee = () => {
+    
+    var employeeRoles = [];
+    var employeesAll = [];
+    
+
+    connection.query(`SELECT * FROM role`, (err, res) => {
+        if (err) throw err;
+        for (let i = 0; i < res.length; i++) {
+            employeeRoles.push(res[i].title);
+        }
+
+    connection.query(`SELECT * FROM employee`, (err, res) => {
+        if (err) throw err;
+        // console.log('error', err.stack); 
+        for (let i = 0; i < res.length; i++) {
+            employeesAll.push(res[i].first_name);
+        }
+
+        inquirer
+            .prompt([
+                {
+                    name: 'first_name',
+                    type: 'input',
+                    message: 'Enter the first name of the employee'
+                },
+                {
+                    name: 'last_name',
+                    type: 'input',
+                    message: 'Enter the last name of the employee?'
+                },
+                {
+                    name: 'role_id',
+                    type: 'input',
+                    message: 'Enter the role of the new employee',
+                    choices: roles,
+                },
+                {
+                    name: 'manager_id',
+                    type: 'input',
+                    message: 'Chose the name of the manager for the new employee',
+                    choices: ['none'].concat(employeesAll)
+                }
+                ]).then(function ({ first_name, last_name, role_id, manager_id }) {
+                    let queryText = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ('${first_name}', '${last_name}', ${employeeRoles.indexOf(role_id)}, ${employeesAll.indexOf(manager_id) + 1})`;
+                   
+                    console.log(queryText)
+
+                    connection.query(queryText, (err, data) => {
+                        if (err) throw err;
+
+                        viewEmployees();
+                    })
+                })
+            })
+        })
+    }
+
+const viewEmployees = () => {
+    var query = "SELECT * FROM employee"; 
+        connection.query(query, (err, res) => {
+        console.log(`EMPLOYEE LIST`); 
+        res.forEach(employee => {
+        console.log(`ID: ${employee.id} | Name: ${employee.first_name} | Role ID: ${employee.role_id} | Manager ID: ${employee.manager_id}`);
+        });
+        actionDatabase(); 
+    });
+};
+
+const updateEmployeeRoles = () =>{
+
+    connection.query(`SELECT * FROM employee`, (err, res) => {
+        if (err) throw err;
+    
+        let employeesAll = [];
+        let rolesAll = [];
+    
+        for (let i = 0; i < res.length; i++) {
+        employeesAll.push(res[i].first_name)
+        }
+    
+    connection.query(`SELECT * FROM role`, (err, res) => {
+        if (err) throw err;
+    
+        for (let i = 0; i < res.length; i++) {
+        rolesAll.push(res[i].title)
+        }
+    
+    inquirer
+        .prompt([
+        {
+            name: 'employee_id',
+            type: 'list',
+            message: "Select the employee whose role will be updated",
+            choices: employeesAll
+        },
+        {
+            name: 'role_id',
+            type: 'list',
+            message: "Select the new role?",
+            choices: rolesAll
+        }
+        ]).then(function ({ employee_id, role_id }) {
+            connection.query(`UPDATE employee SET role_id = ${rolesAll.indexOf(role_id) + 1} WHERE id = ${employeesAll.indexOf(employee_id) + 1}`, function (err, data) {
+                if (err) throw err;
+    
+                actionDatabase();
+            })
+        })
+    })
+})
+}
