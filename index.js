@@ -16,7 +16,7 @@ const connection = mysql.createConnection({
     port: 3306, 
     user: 'root',
     password: 'Lelamylove0221', 
-    database: 'employee_db'
+    database: 'employee_DB'
 }); 
 
 // initiate connection 
@@ -31,7 +31,9 @@ connection.connect((err) => {
 ///////////////////////// LOGIC ///////////////////////// 
 
 
+
 const actionDatabase = () => {
+   
     return inquirer.prompt([
         {
             name: 'database',
@@ -75,13 +77,14 @@ const actionDatabase = () => {
             case 'I am finished, Exit!':
                 connection.end(); 
                 return; 
-        }
+        } 
     })
 };
 
 actionDatabase(); 
 
 const addDepartment = () => {
+    var sql = 'DELETE FROM tables_department'; 
     inquirer.prompt ({
         name: 'department', 
         type: 'input', 
@@ -98,7 +101,7 @@ const addDepartment = () => {
 const viewDepartments = () => {
     var query = "SELECT * FROM department"; 
     connection.query(query, (err, res) => {
-        console.log(`DEPARTMENTS`); 
+        console.log('Department Data'); 
         res.forEach(department => {
             console.log(`ID: ${department.id} | Name: ${department.name}`);
         });
@@ -107,6 +110,7 @@ const viewDepartments = () => {
 };
 
 const addRoles = () => {
+    var sql = 'DELETE FROM tables_role'; 
     let departments = [];
     connection.query('SELECT * FROM department', (err, res) => {
         if (err) throw err; 
@@ -147,7 +151,7 @@ const addRoles = () => {
 const viewRoles = () => {
     var query = "SELECT * FROM role"; 
     connection.query(query, (err, res) => {
-        console.log(`ROLES`); 
+        console.log('Role Data'); 
         res.forEach(role => {
             console.log(`ID: ${role.id} | Salary: ${role.salary} | Title: ${role.title} | Department ID: ${role.department_id}`);
         });
@@ -157,18 +161,19 @@ const viewRoles = () => {
 
 
 const addEmployee = () => {
+    var sql = 'DELETE FROM tables_employee'; 
     
     var employeeRoles = [];
     var employeesAll = [];
     
 
-    connection.query(`SELECT * FROM role`, (err, res) => {
+    connection.query("SELECT * FROM role", (err, res) => {
         if (err) throw err;
         for (let i = 0; i < res.length; i++) {
             employeeRoles.push(res[i].title);
         }
 
-    connection.query(`SELECT * FROM employee`, (err, res) => {
+    connection.query("SELECT * FROM employee", (err, res) => {
         if (err) throw err;
         // console.log('error', err.stack); 
         for (let i = 0; i < res.length; i++) {
@@ -191,20 +196,21 @@ const addEmployee = () => {
                     name: 'role_id',
                     type: 'input',
                     message: 'Enter the role of the new employee',
-                    choices: roles,
+                    choices: employeeRoles,
                 },
                 {
                     name: 'manager_id',
                     type: 'input',
-                    message: 'Chose the name of the manager for the new employee',
+                    message: 'Enter name of the manager for the new employee',
                     choices: ['none'].concat(employeesAll)
                 }
                 ]).then(function ({ first_name, last_name, role_id, manager_id }) {
-                    let queryText = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ('${first_name}', '${last_name}', ${employeeRoles.indexOf(role_id)}, ${employeesAll.indexOf(manager_id) + 1})`;
+                    
+                    let queryText = `INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES (${first_name}, ${last_name}, ${employeeRoles.indexOf(role_id)}, ${employeesAll.indexOf(manager_id) + 1})`;
                    
-                    console.log(queryText)
+                    console.log(queryText);
 
-                    connection.query(queryText, (err, data) => {
+                    connection.query(queryText, (err, res) => {
                         if (err) throw err;
 
                         viewEmployees();
@@ -215,11 +221,12 @@ const addEmployee = () => {
     }
 
 const viewEmployees = () => {
-    var query = "SELECT * FROM employee"; 
+    var query = 'SELECT * FROM employee'; 
         connection.query(query, (err, res) => {
-        console.log(`EMPLOYEE LIST`); 
+        console.log('Employee Data'); 
         res.forEach(employee => {
         console.log(`ID: ${employee.id} | Name: ${employee.first_name} | Role ID: ${employee.role_id} | Manager ID: ${employee.manager_id}`);
+        console.employee('res', res); 
         });
         actionDatabase(); 
     });
@@ -227,7 +234,7 @@ const viewEmployees = () => {
 
 const updateEmployeeRoles = () =>{
 
-    connection.query(`SELECT * FROM employee`, (err, res) => {
+    connection.query('SELECT * FROM employee', (err, res) => {
         if (err) throw err;
     
         let employeesAll = [];
@@ -237,7 +244,7 @@ const updateEmployeeRoles = () =>{
         employeesAll.push(res[i].first_name)
         }
     
-    connection.query(`SELECT * FROM role`, (err, res) => {
+    connection.query('SELECT * FROM role', (err, res) => {
         if (err) throw err;
     
         for (let i = 0; i < res.length; i++) {
@@ -249,13 +256,13 @@ const updateEmployeeRoles = () =>{
         {
             name: 'employee_id',
             type: 'list',
-            message: "Select the employee whose role will be updated",
+            message: 'Select the employee who has a role update',
             choices: employeesAll
         },
         {
             name: 'role_id',
             type: 'list',
-            message: "Select the new role?",
+            message: 'Select the new role?',
             choices: rolesAll
         }
         ]).then(function ({ employee_id, role_id }) {
